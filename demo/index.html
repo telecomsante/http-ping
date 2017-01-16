@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>http-ping demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../http-ping.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+      .vertical-section-container {
+        max-width:80%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic http-ping demo</h3>
+      <p>Using the component with javascript</p>
+      <p>To test the behavior of the component, open the development tools, and disable the network.</p>
+
+      <demo-snippet>
+        <template>
+          <http-ping url="https://github.com"></http-ping>
+          <div class="status"></div>
+          <div class="delay"></div>
+          <script>
+          const ping = document.querySelector('http-ping')
+          ping.addEventListener('ping-status', evt => {
+            document.querySelector('.status').innerHTML = evt.detail.status ? "connected":"not connected";
+          });
+          ping.addEventListener('ping-delay', evt => {
+            document.querySelector('.delay').innerHTML = evt.detail.delay ? `${evt.detail.delay} ms`:'-';
+          })
+          </script>
+        </template>
+      </demo-snippet>
+
+      <p>Using the component in pure HTML</p>
+      <demo-snippet>
+        <template is="dom-bind">
+          <style>
+          .led {
+            position:relative;
+            width:50px;
+            height:50px;
+            border-radius:50px;
+          }
+          .connected {
+            background: green;
+          }
+          .disconnected {
+            background: crimson;
+          }
+          .delay {
+            font-family: Roboto;
+            font-size:16px;
+            color: gray;
+            margin-left: 20px;
+          }
+          .box {
+            display: flex;
+            align-items: center;
+          }
+          </style>
+          <http-ping status="{{status}}" delay="{{delay}}"></http-ping>
+
+          <div class="box">
+            <div class="led connected" hidden={{!status}}></div>
+            <div class="led disconnected" hidden={{status}}></div>
+            <div class="delay">{{delay}} <span hidden={{!status}}>ms</span></div>
+          </div>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>

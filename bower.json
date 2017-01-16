@@ -1,0 +1,29 @@
+{
+  "name": "http-ping",
+  "description": "Ping http(s) url",
+  "version": "0.1.0",
+  "license": "LICENSE.md",
+  "main": "http-ping.html",
+  "authors": [
+    "Telecom Sante <dev@telecomsante.com>"
+  ],
+  "keywords": [
+    "web-components",
+    "polymer",
+    "ping",
+    "network"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/telecomsante/http-ping.git"
+  },
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}

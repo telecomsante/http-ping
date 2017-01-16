@@ -1,38 +1,51 @@
 # \<http-ping\>
 
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/telecomsante/http-ping)
+
 Ping http(s) url
 
-## Install the Polymer-CLI
+A simple no GUI component to ping an url. The component use the fetch API, so use it with recent browser.
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
+By default, the component ping google.com
 
-## Viewing Your Application
+> Nota ; fetch polyfill doesn't work due to CORS problems.
 
+tested on :
+
+ - chrome
+ - firefox
+ - safary TP ( doesn't work on safari )
+ - opera
+ - Edge
+
+## Quick example
+
+<!--
 ```
-$ polymer serve
+<custom-element-demo>
+  <template>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="http-ping.html">
+    <next-code-block></next-code-block>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<http-ping interval="2000"></http-ping>
+<div class="status"></div>
+<div class="delay"></div>
+<script>
+const ping = document.querySelector('http-ping')
+ping.addEventListener('ping-status', evt => {
+  document.querySelector('.status').innerHTML = evt.detail.status ? "connected":"not connected";
+});
+ping.addEventListener('ping-delay', evt => {
+  document.querySelector('.delay').innerHTML = evt.detail.delay ? `${evt.detail.delay} ms`:'-';
+})
+</script>
 ```
 
-## Building Your Application
+The component is licensed under the [ISC License](LICENSE.md)
 
-```
-$ polymer build
-```
-
-This will create a `build/` folder with `bundled/` and `unbundled/` sub-folders
-containing a bundled (Vulcanized) and unbundled builds, both run through HTML,
-CSS, and JS optimizers.
-
-You can serve the built versions by giving `polymer serve` a folder to serve
-from:
-
-```
-$ polymer serve build/bundled
-```
-
-## Running Tests
-
-```
-$ polymer test
-```
-
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+Demo and doc are available on https://telecomsante.github.io/http-ping/
