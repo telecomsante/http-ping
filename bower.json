@@ -1,7 +1,7 @@
 {
   "name": "http-ping",
   "description": "Ping http(s) url",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "license": "LICENSE.md",
   "main": "http-ping.html",
   "authors": [
