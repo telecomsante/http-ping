@@ -1,89 +1,120 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 
 <!--
-# http-ping
+# \<http-ping\>
 Ping http(s) url and retrieve the status and delay
 
 The component use the fetch API, so use it with recent browser.
 
 The component has no GUI.
 
+@polymer
+@customElememt
 @demo demo/index.html
 -->
-
 <dom-module id="http-ping">
-
   <script>
-    Polymer({
+    
+    class HttpPing extends Polymer.Element {
+      static get is() {
+        return 'http-ping'
+      }
 
-      is: 'http-ping',
+      static get template() { return false; }
 
-      properties: {
-        /**
-         * The url to ping
-         * @type {String}
-         */
-        url: {
-          type: String,
-          value: 'https://www.google.com',
-        },
-        /**
-         * requests interval in milliseconds
-         *
-         * be aware to set an interval bigger that the timeout.
-         *
-         * @type {Number}
-         */
-        interval: {
-          type: Number,
-          value: 2000,
-          observer: '_intervalChanged',
-        },
-        /**
-         * Timeout in milliseconds before declaring the url unreachable
-         * @type {Number}
-         */
-        timeout: {
-          type: Number,
-          value: 1000,
-        },
+      static get properties() {
+        return {
+          /**
+           * The url to ping
+           * @type {String}
+           */
+          url: {
+            type: String,
+            value: 'https://www.google.com',
+          },
 
-        /**
-         * Status of the connection
-         * @type {Boolean}
-         */
-        status: {
-          type: Boolean,
-          value: false,
-          readOnly: true,
-          notify: true,
-          reflectToAttribute: true,
-        },
+          /**
+           * requests interval in milliseconds
+           *
+           * be aware to set an interval bigger than the timeout.
+           *
+           * @type {Number}
+           */
+          interval: {
+            type: Number,
+            value: 2000,
+            observer: '_intervalChanged',
+          },
 
-        /**
-         * Delay of the ping in ms
-         * @type {String}
-         */
-        delay: {
-          type: Number,
-          value: null,
-          readOnly: true,
-          notify: true,
-          reflectToAttribute: true,
-        },
-      },
+          /**
+           * Timeout in milliseconds before declaring the url unreachable
+           * @type {Number}
+           */
+          timeout: {
+            type: Number,
+            value: 1000,
+          },
+
+          /**
+           * Status of the connection
+           * @type {Boolean}
+           */
+          status: {
+            type: Boolean,
+            value: false,
+            readOnly: true,
+            notify: true,
+            reflectToAttribute: true,
+          },
+
+          /**
+           * Delay of the ping in ms
+           * @type {String}
+           */
+          delay: {
+            type: Number,
+            value: null,
+            readOnly: true,
+            notify: true,
+            reflectToAttribute: true,
+          },
+        }
+      }
 
       /**
        * restart the loop when the value of interval change
        * @method _intervalChanged
        * @return {none}
        */
-      _intervalChanged: function() {
-        if(this._loop) {
+      _intervalChanged() {
+        if (this._loop) {
           clearInterval(this._loop);
         }
         this._loop = setInterval(this._httpPing.bind(this), this.interval);
-      },
+      }
+
+      /**
+       * emulate a ping
+       * 
+       * if the promise resolves, return the ping delay
+       */
+      async _ping(url) {
+        const start = new Date();
+        await fetch(`${url}/?${+ new Date()}`, {
+          mode: 'no-cors'
+        })
+        return new Date() - start;
+      }
+
+      /**
+       * timeout
+       *
+       * rejects the promise when the delay has passed
+       */
+      async _timeout(ms) {
+        await new Promise((resolve, reject) => setTimeout(() => reject('timeout'), ms));
+        return ms
+      }
 
       /**
        * do the ping.
@@ -91,48 +122,59 @@ The component has no GUI.
        * @method _httpPing
        * @return {none}
        */
-      _httpPing: function() {
-        const start = new Date();
-        let timeout = new Promise((resolve, reject) => {
-          setTimeout(reject, this.timeout, 'request timed out');
-        });
-        let ping = fetch(`${this.url}/?${+ new Date()}`, { mode:'no-cors' } )
-            .then(response => {
-              return new Date() - start;
-            });
-        Promise.race([timeout, ping])
+      _httpPing() {
+        Promise.race([this._timeout(this.timeout), this._ping(this.url)])
           .then(delay => {
-            if(!this.status) {
-              /**
-              * Fired when the connection state changes.
-              *
-              * @event ping-status
-              * @param {Boolean} status the connection status
-              */
-              this.fire('ping-status', {status: true});
+            if (!this.status) {
+              this._dispatchStatus(true)
             }
             this._setStatus(true);
-
-            /**
-            * Fired when a ping is done.
-            *
-            * @event ping-delay
-            * @param {String} url the url to ping.
-            * @param {Number} delay the delay of the ping.
-            */
-            this.fire('ping-delay', { url: this.url, delay: delay });
+            this._dispatchPingDelay(this.url, delay)
             this._setDelay(delay);
           })
-          .catch( err => {
-            if(!this.status) {
-              this.fire('ping-status', {status: false});
+          .catch(err => {
+            console.debug(err)
+            if (!this.status) {
+              this._dispatchStatus(false)
             }
             this._setStatus(false);
             this._setDelay(null);
-            this.fire('ping-delay', { url: this.url, delay: '' });
+            this._dispatchPingDelay(this.url, null)
           })
-      },
+      }
 
-    });
+      /**
+       * Fired when a ping is done.
+       *
+       * @event ping-delay
+       * @param {String} url the url to ping.
+       * @param {Number} delay the delay of the ping.
+       */
+      _dispatchPingDelay(url, delay = null) {
+        const evt = new CustomEvent('ping-delay', {
+          detail: {
+            url: url,
+            delay: delay
+          }
+        })
+        this.dispatchEvent(evt)
+      }
+
+      /**
+       * Fired when the connection state changes.
+       *
+       * @event ping-status
+       * @param {Boolean} status the connection status
+       */
+      _dispatchStatus(status) {
+        const evt = new CustomEvent('ping-status', {
+          detail: {
+            status: status
+          }
+        })
+        this.dispatchEvent(evt)
+      }
+    }
+    customElements.define(HttpPing.is, HttpPing)
   </script>
 </dom-module>
