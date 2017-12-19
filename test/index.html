@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>Tests</title>
+
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+  </head>
+  <body>
+    <script>
+      WCT.loadSuites([
+        'http-ping_test.html?dom=shadow',
+        // Load 'my-view1.html' test suite, using native shadow dom
+        // 'remoteTV-app/remotetv-mobile-channel.html?dom=shadow',
+        // Load 'my-view1.html' test suite, using shadydom
+        // 'remoteTV-app/remotetv-mobile-channel.html?wc-shadydom=true',
+      ]);
+    </script>
+  </body>
+</html>

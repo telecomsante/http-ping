@@ -1,30 +1,76 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>http-ping test</title>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+  <title>http-ping test</title>
 
-    <link rel="import" href="../http-ping.html">
-  </head>
-  <body>
-    <test-fixture id="basic">
-      <template>
-        <http-ping></http-ping>
-      </template>
-    </test-fixture>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
 
-    <script>
-      suite('http-ping', function() {
-        test('instantiating the element works', function() {
-          var element = fixture('basic');
-          assert.equal(element.is, 'http-ping');
-        });
+  <link rel="import" href="../http-ping.html">
+</head>
+
+<body>
+  <test-fixture id="basic">
+    <template>
+      <http-ping></http-ping>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('http-ping', () => {
+      test('instantiating the element works', () => {
+        var element = fixture('basic');
+        assert.equal(element.constructor.name, 'HttpPing');
       });
-    </script>
-  </body>
+
+      test('ping status', (done) => {
+        let element = fixture('basic')
+        flush(() => {
+          element.addEventListener('ping-status', evt => {
+            assert.isTrue(evt.detail.status)
+            done()
+          })
+        })
+      })
+
+      test('ping delay', (done) => {
+        let element = fixture('basic')
+        flush(() => {
+          element.addEventListener('ping-delay', evt => {
+            assert.isNumber(evt.detail.delay)
+            assert.isAbove(evt.detail.delay, 0)
+            done()
+          }, { once: true })
+        })
+      })
+
+      test('ping status for test.local is false', (done) => {
+        let element = fixture('basic')
+        element.url = 'http://test.local'
+        flush(() => {
+          element.addEventListener('ping-status', evt => {
+            assert.isFalse(evt.detail.status)
+            done()
+          }, { once: true })
+        })
+      })
+
+      test('ping delay for test.local is null', (done) => {
+        let element = fixture('basic')
+        element.url = 'http://test.local'
+        flush(() => {
+          element.addEventListener('ping-delay', evt => {
+            assert.isNull(evt.detail.delay)
+            done()
+          }, { once: true })
+        })
+      })
+    })
+  </script>
+</body>
+
 </html>
