@@ -1,0 +1,29 @@
+{
+  "name": "http-ping",
+  "version": "1.0.0",
+  "description": "A ping component",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "postinstall": "polymer install",
+    "test": "polymer test",
+    "doc": "polymer analyze > analysis.json",
+    "start": "polymer serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/telecomsante/http-ping.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/telecomsante/http-ping/issues"
+  },
+  "homepage": "https://github.com/telecomsante/http-ping#readme",
+  "devDependencies": {
+    "polymer-cli": "^1.5.7"
+  }
+}
